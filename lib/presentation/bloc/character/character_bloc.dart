@@ -93,7 +93,11 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     Emitter<CharacterState> emit,
   ) async {
     try {
-      final status = event.status ?? (state is CharacterLoaded ? (state as CharacterLoaded).currentStatus : null);
+      String? status = event.status;
+      if (status == null && state is CharacterLoaded) {
+        final currentState = state as CharacterLoaded;
+        status = currentState.currentStatus;
+      }
       final response = await getCharacters(GetCharactersParams(status: status));
       emit(
         CharacterLoaded(

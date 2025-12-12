@@ -107,6 +107,9 @@ API Externa
 
 - **flutter_test**: Framework de testes do Flutter
 - **flutter_lints** (^6.0.0): Conjunto de regras de lint recomendadas
+- **bloc_test** (^9.1.5): Testes para BLoC/State Management
+- **mockito** (^5.4.4): Criação de mocks para testes
+- **build_runner** (^2.4.9): Geração automática de código (mocks)
 
 ## 🚀 Como Executar
 
@@ -216,14 +219,33 @@ Implementação simples de DI sem bibliotecas externas, mantendo o projeto leve.
 
 A arquitetura foi pensada para facilitar testes:
 
-- **Testes Unitários**: Use cases, BLoCs, repositories
-- **Testes de Integração**: Fluxo completo de dados
-- **Testes de Widget**: Componentes de UI
+- ✅ **Testes Unitários**: CharacterBloc e CharacterRepositoryImpl implementados
+- **Testes de Integração**: Fluxo completo de dados (futuro)
+- **Testes de Widget**: Componentes de UI (futuro)
 
-Para executar os testes:
+### Executar os Testes
+
+1. **Gerar os mocks** (primeira vez ou após mudanças):
+```bash
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+2. **Executar todos os testes**:
 ```bash
 flutter test
 ```
+
+3. **Executar testes específicos**:
+```bash
+# Testes do Bloc
+flutter test test/presentation/bloc/character/character_bloc_test.dart
+
+# Testes do Repository
+flutter test test/data/repositories/character_repository_impl_test.dart
+```
+
+Para mais detalhes sobre os testes, veja [test/README.md](test/README.md)
 
 ## 📱 API Utilizada
 
@@ -245,13 +267,19 @@ flutter test
 }
 ```
 
+## ✅ Funcionalidades Implementadas (Além dos Requisitos)
+
+- ✅ **Cache de Imagens**: Utilizando `cached_network_image` para melhor performance
+- ✅ **Animações Hero**: Transição suave da imagem do card para a tela de detalhes
+- ✅ **Testes Unitários**: Cobertura completa do CharacterBloc e CharacterRepositoryImpl
+
 ## 🔄 Próximas Melhorias
 
 - [ ] Cache local para personagens já carregados
-- [ ] Tela de detalhes do personagem
-- [ ] Busca e filtros
+- [ ] Busca de personagens
 - [ ] Favoritos
-- [ ] Testes unitários e de integração
+- [ ] Testes de integração
+- [ ] Testes de widget
 - [ ] Internacionalização (i18n)
 - [ ] Temas claro/escuro
 
