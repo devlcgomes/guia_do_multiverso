@@ -5,6 +5,7 @@ import '../bloc/character/character_bloc.dart';
 import '../bloc/character/character_event.dart';
 import '../bloc/character/character_state.dart';
 import '../widgets/character_card.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -331,44 +332,98 @@ class _HomePageState extends State<HomePage> {
   Widget _buildBottomNavigation(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A2B34),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(0),
-          topRight: Radius.circular(0),
+        color: const Color(0xFF1A1A2E),
+        border: Border(
+          top: BorderSide(
+            color: const Color(0xFF00FF88).withOpacity(0.2),
+            width: 1,
+          ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 15,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.list,
-                  color: Color(0xFF4ECDC4),
-                  size: 28,
-                ),
-                onPressed: () {},
+              _buildNavItem(
+                icon: Icons.list_alt,
+                label: 'Personagens',
+                isActive: true,
+                onTap: () {},
               ),
-              const SizedBox(width: 60),
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.grey[400],
-                  size: 28,
-                ),
-                onPressed: () {},
+              _buildNavItem(
+                icon: Icons.settings_outlined,
+                label: 'Configurações',
+                isActive: false,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsPage(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFF00FF88).withOpacity(0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: isActive
+              ? Border.all(
+                  color: const Color(0xFF00FF88).withOpacity(0.4),
+                  width: 1,
+                )
+              : null,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isActive
+                  ? const Color(0xFF00FF88)
+                  : Colors.grey[500],
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive
+                    ? const Color(0xFF00FF88)
+                    : Colors.grey[500],
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
       ),
     );
