@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
 
   @override
   void initState() {
@@ -29,17 +30,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent * 0.8) {
-      final state = context.read<CharacterBloc>().state;
-      if (state is CharacterLoaded && state.hasMore) {
-        if (state.nextUrl != null) {
-          context.read<CharacterBloc>().add(
-                LoadMoreCharacters(state.nextUrl!),
-              );
-        }
-      }
-    }
+    // Scroll listener mantido para outras funcionalidades futuras
   }
 
   @override
@@ -64,37 +55,125 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (state is CharacterError) {
-            final previousState = context.read<CharacterBloc>().state;
-            String? lastStatus;
-            if (previousState is CharacterLoaded) {
-              lastStatus = previousState.currentStatus;
+            final hasPreviousData = state.previousCharacters != null && 
+                                   state.previousCharacters!.isNotEmpty;
+
+            if (hasPreviousData) {
+              return Expanded(
+                child: Column(
+                  children: [
+                    _buildFilterChips(context, state.currentStatus),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          ListView.builder(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.only(bottom: 80),
+                            itemCount: state.previousCharacters!.length,
+                            itemBuilder: (context, index) {
+                              return CharacterCard(
+                                character: state.previousCharacters![index],
+                              );
+                            },
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              color: Colors.red.withOpacity(0.9),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      state.message,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      if (state.currentStatus != null) {
+                                        context.read<CharacterBloc>().add(
+                                          FilterByStatus(state.currentStatus),
+                                        );
+                                      } else {
+                                        context.read<CharacterBloc>().add(
+                                          const LoadCharacters(),
+                                        );
+                                      }
+                                    },
+                                    child: const Text(
+                                      'Tentar',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
 
             return Expanded(
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      state.message,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.wifi_off,
+                        size: 64,
+                        color: Colors.grey[400],
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<CharacterBloc>().add(LoadCharacters(status: lastStatus));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FF88),
-                        foregroundColor: Colors.black,
+                      const SizedBox(height: 24),
+                      Text(
+                        state.message,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      child: const Text('Tentar novamente'),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<CharacterBloc>().add(
+                            LoadCharacters(status: state.currentStatus),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00FF88),
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                        ),
+                        child: const Text(
+                          'Tentar novamente',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -108,6 +187,10 @@ class _HomePageState extends State<HomePage> {
             final currentStatus = state is CharacterLoaded
                 ? state.currentStatus
                 : (state as CharacterLoadingMore).currentStatus;
+            
+            if (state is CharacterLoaded) {
+              _isLoadingMore = false;
+            }
 
             return Expanded(
               child: RefreshIndicator(
@@ -125,14 +208,25 @@ class _HomePageState extends State<HomePage> {
                         itemCount: characters.length + (hasMore ? 1 : 0),
                         itemBuilder: (context, index) {
                           if (index == characters.length) {
-                            return const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFF00FF88),
-                                ),
-                              ),
-                            );
+                            return _buildLoadingMoreIndicator(characters.length);
+                          }
+
+                          final remainingItems = characters.length - index;
+                          if (remainingItems <= 5 && hasMore && !_isLoadingMore) {
+                            final state = context.read<CharacterBloc>().state;
+                            if (state is CharacterLoaded && state.nextUrl != null) {
+                              _isLoadingMore = true;
+                              
+                              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                                await Future.delayed(const Duration(milliseconds: 400));
+                                
+                                if (mounted) {
+                                  context.read<CharacterBloc>().add(
+                                    LoadMoreCharacters(state.nextUrl!),
+                                  );
+                                }
+                              });
+                            }
                           }
 
                           final character = characters[index];
@@ -332,6 +426,66 @@ class _HomePageState extends State<HomePage> {
             ? Colors.white
             : Colors.grey[400],
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+      ),
+    );
+  }
+
+  Widget _buildLoadingMoreIndicator(int loadedCount) {
+    return Container(
+      margin: const EdgeInsets.only(top: 16, bottom: 100),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A2E),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: const Color(0xFF00FF88).withOpacity(0.5),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00FF88).withOpacity(0.3),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF00FF88),
+                    strokeWidth: 2.5,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Carregando mais...',
+                  style: TextStyle(
+                    color: Colors.grey[300],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '$loadedCount personagens carregados',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }

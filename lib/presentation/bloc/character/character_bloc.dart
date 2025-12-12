@@ -34,7 +34,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
       if (e is Failure) {
         emit(CharacterError(e.message));
       } else {
-        emit(CharacterError('Erro inesperado: $e'));
+        emit(CharacterError('Erro ao carregar personagens. Tente novamente.'));
       }
     }
   }
@@ -67,9 +67,17 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
         );
       } catch (e) {
         if (e is Failure) {
-          emit(CharacterError(e.message));
+          emit(CharacterError(
+            e.message,
+            previousCharacters: currentState.characters,
+            currentStatus: currentState.currentStatus,
+          ));
         } else {
-          emit(CharacterError('Erro ao carregar mais: $e'));
+          emit(CharacterError(
+            'Erro ao carregar mais personagens. Tente novamente.',
+            previousCharacters: currentState.characters,
+            currentStatus: currentState.currentStatus,
+          ));
         }
       }
     }

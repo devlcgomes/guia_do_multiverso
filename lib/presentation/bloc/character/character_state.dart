@@ -50,10 +50,16 @@ class CharacterLoadingMore extends CharacterState {
 
 class CharacterError extends CharacterState {
   final String message;
+  final List<CharacterEntity>? previousCharacters;
+  final String? currentStatus;
 
-  const CharacterError(this.message);
+  const CharacterError(
+    this.message, {
+    this.previousCharacters,
+    this.currentStatus,
+  });
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, previousCharacters, currentStatus];
 }
 

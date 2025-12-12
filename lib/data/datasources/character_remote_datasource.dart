@@ -26,18 +26,32 @@ class CharacterRemoteDataSourceImpl implements CharacterRemoteDataSource {
         }
       }
 
-      final response = await client.get(uri);
+      final response = await client.get(uri).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw NetworkFailure('Tempo de conexão esgotado. Verifique sua internet e tente novamente.');
+        },
+      );
 
       if (response.statusCode == 200) {
         return CharactersResponseModel.fromJson(
           json.decode(response.body),
         );
       } else {
-        throw ServerFailure('Erro ao carregar personagens: ${response.statusCode}');
+        throw ServerFailure('Erro ao carregar personagens. Tente novamente mais tarde.');
       }
     } catch (e) {
       if (e is Failure) rethrow;
-      throw NetworkFailure('Erro de conexão: $e');
+      
+      final errorMessage = e.toString().toLowerCase();
+      if (errorMessage.contains('socket') || 
+          errorMessage.contains('network') ||
+          errorMessage.contains('connection') ||
+          errorMessage.contains('internet')) {
+        throw NetworkFailure('Sem conexão com a internet. Verifique sua rede e tente novamente.');
+      }
+      
+      throw NetworkFailure('Erro ao conectar com o servidor. Tente novamente.');
     }
   }
 }
