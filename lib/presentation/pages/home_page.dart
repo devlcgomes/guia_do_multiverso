@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/character/character_bloc.dart';
 import '../bloc/character/character_event.dart';
 import '../bloc/character/character_state.dart';
+import '../widgets/character_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -98,19 +99,7 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   final character = characters[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(character.image),
-                      ),
-                      title: Text(character.name),
-                      subtitle: Text('${character.species} - ${character.status}'),
-                    ),
-                  );
+                  return CharacterCard(character: character);
                 },
               ),
             );

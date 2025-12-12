@@ -9,6 +9,7 @@ class CharacterEntity extends Equatable {
   final String gender;
   final String image;
   final String url;
+  final String location;
   final DateTime created;
 
   const CharacterEntity({
@@ -20,6 +21,7 @@ class CharacterEntity extends Equatable {
     required this.gender,
     required this.image,
     required this.url,
+    required this.location,
     required this.created,
   });
 
@@ -33,6 +35,7 @@ class CharacterEntity extends Equatable {
         gender,
         image,
         url,
+        location,
         created,
       ];
 }

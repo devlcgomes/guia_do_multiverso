@@ -10,6 +10,7 @@ class CharacterModel extends CharacterEntity {
     required super.gender,
     required super.image,
     required super.url,
+    required super.location,
     required super.created,
   });
 
@@ -23,6 +24,7 @@ class CharacterModel extends CharacterEntity {
       gender: json['gender'],
       image: json['image'],
       url: json['url'],
+      location: json['location']?['name'] ?? 'Desconhecido',
       created: DateTime.parse(json['created']),
     );
   }
@@ -37,6 +39,7 @@ class CharacterModel extends CharacterEntity {
       'gender': gender,
       'image': image,
       'url': url,
+      'location': {'name': location},
       'created': created.toIso8601String(),
     };
   }
