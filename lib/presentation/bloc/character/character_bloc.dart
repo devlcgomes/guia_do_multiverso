@@ -12,6 +12,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     on<LoadMoreCharacters>(_onLoadMoreCharacters);
     on<RefreshCharacters>(_onRefreshCharacters);
     on<FilterByStatus>(_onFilterByStatus);
+    on<SearchCharacters>(_onSearchCharacters);
   }
 
   Future<void> _onLoadCharacters(
@@ -137,6 +138,54 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
         emit(CharacterError(e.message));
       } else {
         emit(CharacterError('Erro ao filtrar: $e'));
+      }
+    }
+  }
+
+  Future<void> _onSearchCharacters(
+    SearchCharacters event,
+    Emitter<CharacterState> emit,
+  ) async {
+    if (event.query.isEmpty) {
+      // Se a busca estiver vazia, recarrega todos os personagens
+      emit(const CharacterLoading());
+      try {
+        final response = await getCharacters(GetCharactersParams());
+        emit(
+          CharacterLoaded(
+            characters: response.characters,
+            nextUrl: response.next,
+            hasMore: response.next != null,
+            currentStatus: null,
+          ),
+        );
+      } catch (e) {
+        if (e is Failure) {
+          emit(CharacterError(e.message));
+        } else {
+          emit(CharacterError('Erro ao buscar personagens. Tente novamente.'));
+        }
+      }
+      return;
+    }
+
+    emit(const CharacterLoading());
+
+    try {
+      final response = await getCharacters(GetCharactersParams(name: event.query));
+      emit(
+        CharacterLoaded(
+          characters: response.characters,
+          nextUrl: response.next,
+          hasMore: response.next != null,
+          currentStatus: null,
+        ),
+      );
+    } catch (e) {
+      if (e is Failure) {
+        emit(CharacterError(e.message));
+      } else {
+        emit(CharacterError('Erro ao buscar personagens. Tente novamente.'));
       }
     }
   }

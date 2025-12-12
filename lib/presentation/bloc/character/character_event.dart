@@ -43,3 +43,12 @@ class FilterByStatus extends CharacterEvent {
   List<Object?> get props => [status];
 }
 
+class SearchCharacters extends CharacterEvent {
+  final String query;
+
+  const SearchCharacters(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
+

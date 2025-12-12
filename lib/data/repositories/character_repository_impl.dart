@@ -9,9 +9,9 @@ class CharacterRepositoryImpl implements CharacterRepository {
   CharacterRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<CharactersResponseEntity> getCharacters({String? url, String? status}) async {
+  Future<CharactersResponseEntity> getCharacters({String? url, String? status, String? name}) async {
     try {
-      final result = await remoteDataSource.getCharacters(url: url, status: status);
+      final result = await remoteDataSource.getCharacters(url: url, status: status, name: name);
       return result;
     } on Failure {
       rethrow;

@@ -4,7 +4,7 @@ import '../models/characters_response_model.dart';
 import '../../core/error/failures.dart';
 
 abstract class CharacterRemoteDataSource {
-  Future<CharactersResponseModel> getCharacters({String? url, String? status});
+  Future<CharactersResponseModel> getCharacters({String? url, String? status, String? name});
 }
 
 class CharacterRemoteDataSourceImpl implements CharacterRemoteDataSource {
@@ -14,15 +14,22 @@ class CharacterRemoteDataSourceImpl implements CharacterRemoteDataSource {
   CharacterRemoteDataSourceImpl({required this.client});
 
   @override
-  Future<CharactersResponseModel> getCharacters({String? url, String? status}) async {
+  Future<CharactersResponseModel> getCharacters({String? url, String? status, String? name}) async {
     try {
       Uri uri;
       if (url != null) {
         uri = Uri.parse(url);
       } else {
         uri = Uri.parse(baseUrl);
+        final queryParams = <String, String>{};
         if (status != null && status.isNotEmpty) {
-          uri = uri.replace(queryParameters: {'status': status});
+          queryParams['status'] = status;
+        }
+        if (name != null && name.isNotEmpty) {
+          queryParams['name'] = name;
+        }
+        if (queryParams.isNotEmpty) {
+          uri = uri.replace(queryParameters: queryParams);
         }
       }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 import '../bloc/character/character_bloc.dart';
 import '../bloc/character/character_event.dart';
 import '../bloc/character/character_state.dart';
@@ -14,18 +15,31 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
 
   @override
   void initState() {
     super.initState();
     context.read<CharacterBloc>().add(const LoadCharacters());
     _scrollController.addListener(_onScroll);
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
+    _searchDebounce?.cancel();
     super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      final query = _searchController.text.trim();
+      context.read<CharacterBloc>().add(SearchCharacters(query));
+    });
   }
 
   void _onScroll() {
@@ -280,21 +294,36 @@ class _HomePageState extends State<HomePage> {
           width: 1,
         ),
       ),
-      child: TextField(
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: 'Buscar Personagem...',
-          hintStyle: TextStyle(color: Colors.grey[500]),
-          prefixIcon: Icon(
-            Icons.search,
-            color: Colors.grey[400],
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-        ),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: _searchController,
+        builder: (context, value, child) {
+          return TextField(
+            controller: _searchController,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Buscar Personagem...',
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.grey[400],
+              ),
+              suffixIcon: value.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, color: Colors.grey),
+                      onPressed: () {
+                        _searchController.clear();
+                        context.read<CharacterBloc>().add(const LoadCharacters());
+                      },
+                    )
+                  : null,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

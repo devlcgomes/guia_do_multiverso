@@ -11,6 +11,18 @@ class CharacterCard extends StatelessWidget {
     required this.character,
   });
 
+  Color _getStatusColor() {
+    switch (character.status.toLowerCase()) {
+      case 'alive':
+        return const Color(0xFF00FF88);
+      case 'dead':
+        return Colors.red;
+      case 'unknown':
+      default:
+        return Colors.grey;
+    }
+  }
+
   String _getStatusText() {
     switch (character.status.toLowerCase()) {
       case 'alive':
@@ -120,13 +132,26 @@ class CharacterCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    '${_getStatusText()} - ${_getSpeciesText()}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF00FF88),
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${_getStatusText()} - ${_getSpeciesText()}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF00FF88),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
