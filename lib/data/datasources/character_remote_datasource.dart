@@ -36,7 +36,7 @@ class CharacterRemoteDataSourceImpl implements CharacterRemoteDataSource {
       final response = await client.get(uri).timeout(
         const Duration(seconds: 10),
         onTimeout: () {
-          throw NetworkFailure('Tempo de conexão esgotado. Verifique sua internet e tente novamente.');
+          throw NetworkFailure('Timeout na conexão');
         },
       );
 
@@ -45,7 +45,7 @@ class CharacterRemoteDataSourceImpl implements CharacterRemoteDataSource {
           json.decode(response.body),
         );
       } else {
-        throw ServerFailure('Erro ao carregar personagens. Tente novamente mais tarde.');
+        throw ServerFailure('Erro no servidor');
       }
     } catch (e) {
       if (e is Failure) rethrow;
@@ -55,10 +55,10 @@ class CharacterRemoteDataSourceImpl implements CharacterRemoteDataSource {
           errorMessage.contains('network') ||
           errorMessage.contains('connection') ||
           errorMessage.contains('internet')) {
-        throw NetworkFailure('Sem conexão com a internet. Verifique sua rede e tente novamente.');
+        throw NetworkFailure('Sem conexão');
       }
       
-      throw NetworkFailure('Erro ao conectar com o servidor. Tente novamente.');
+      throw NetworkFailure('Erro de conexão');
     }
   }
 }

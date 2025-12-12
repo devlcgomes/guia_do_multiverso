@@ -35,7 +35,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
       if (e is Failure) {
         emit(CharacterError(e.message));
       } else {
-        emit(CharacterError('Erro ao carregar personagens. Tente novamente.'));
+        emit(CharacterError('Erro ao carregar'));
       }
     }
   }
@@ -79,7 +79,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
           ));
         } else {
           emit(CharacterError(
-            'Erro ao carregar mais personagens. Tente novamente.',
+            'Erro ao carregar mais',
             previousCharacters: currentState.characters,
             currentStatus: currentState.currentStatus,
           ));
@@ -161,7 +161,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
         if (e is Failure) {
           emit(CharacterError(e.message));
         } else {
-          emit(CharacterError('Erro ao buscar personagens. Tente novamente.'));
+          emit(CharacterError('Erro na busca'));
         }
       }
       return;
@@ -183,7 +183,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
       if (e is Failure) {
         emit(CharacterError(e.message));
       } else {
-        emit(CharacterError('Erro ao buscar personagens. Tente novamente.'));
+        emit(CharacterError('Erro na busca'));
       }
     }
   }

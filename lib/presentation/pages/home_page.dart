@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<CharacterBloc>().add(const LoadCharacters());
-    _scrollController.addListener(_onScroll);
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -41,9 +40,6 @@ class _HomePageState extends State<HomePage> {
       final query = _searchController.text.trim();
       context.read<CharacterBloc>().add(SearchCharacters(query));
     });
-  }
-
-  void _onScroll() {
   }
 
   @override
@@ -544,7 +540,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Carregando mais...',
+                  'Carregando...',
                   style: TextStyle(
                     color: Colors.grey[300],
                     fontSize: 14,

@@ -47,7 +47,7 @@ class SettingsPage extends StatelessWidget {
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Cache atualizado com sucesso!'),
+                    content: Text('Cache atualizado'),
                     backgroundColor: Color(0xFF00FF88),
                     behavior: SnackBarBehavior.floating,
                   ),
