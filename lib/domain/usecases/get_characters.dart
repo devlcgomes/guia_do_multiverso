@@ -9,13 +9,14 @@ class GetCharacters implements UseCase<CharactersResponseEntity, GetCharactersPa
 
   @override
   Future<CharactersResponseEntity> call(GetCharactersParams params) async {
-    return await repository.getCharacters(url: params.url);
+    return await repository.getCharacters(url: params.url, status: params.status);
   }
 }
 
 class GetCharactersParams {
   final String? url;
+  final String? status;
 
-  GetCharactersParams({this.url});
+  GetCharactersParams({this.url, this.status});
 }
 

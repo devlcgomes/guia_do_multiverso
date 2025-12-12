@@ -11,6 +11,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     on<LoadCharacters>(_onLoadCharacters);
     on<LoadMoreCharacters>(_onLoadMoreCharacters);
     on<RefreshCharacters>(_onRefreshCharacters);
+    on<FilterByStatus>(_onFilterByStatus);
   }
 
   Future<void> _onLoadCharacters(
@@ -20,12 +21,13 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     emit(const CharacterLoading());
 
     try {
-      final response = await getCharacters(GetCharactersParams());
+      final response = await getCharacters(GetCharactersParams(status: event.status));
       emit(
         CharacterLoaded(
           characters: response.characters,
           nextUrl: response.next,
           hasMore: response.next != null,
+          currentStatus: event.status,
         ),
       );
     } catch (e) {
@@ -46,6 +48,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
       emit(CharacterLoadingMore(
         characters: currentState.characters,
         nextUrl: currentState.nextUrl,
+        currentStatus: currentState.currentStatus,
       ));
 
       try {
@@ -59,6 +62,7 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
             characters: updatedCharacters,
             nextUrl: response.next,
             hasMore: response.next != null,
+            currentStatus: currentState.currentStatus,
           ),
         );
       } catch (e) {
@@ -76,12 +80,14 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     Emitter<CharacterState> emit,
   ) async {
     try {
-      final response = await getCharacters(GetCharactersParams());
+      final status = event.status ?? (state is CharacterLoaded ? (state as CharacterLoaded).currentStatus : null);
+      final response = await getCharacters(GetCharactersParams(status: status));
       emit(
         CharacterLoaded(
           characters: response.characters,
           nextUrl: response.next,
           hasMore: response.next != null,
+          currentStatus: status,
         ),
       );
     } catch (e) {
@@ -89,6 +95,31 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
         emit(CharacterError(e.message));
       } else {
         emit(CharacterError('Erro ao atualizar: $e'));
+      }
+    }
+  }
+
+  Future<void> _onFilterByStatus(
+    FilterByStatus event,
+    Emitter<CharacterState> emit,
+  ) async {
+    emit(const CharacterLoading());
+
+    try {
+      final response = await getCharacters(GetCharactersParams(status: event.status));
+      emit(
+        CharacterLoaded(
+          characters: response.characters,
+          nextUrl: response.next,
+          hasMore: response.next != null,
+          currentStatus: event.status,
+        ),
+      );
+    } catch (e) {
+      if (e is Failure) {
+        emit(CharacterError(e.message));
+      } else {
+        emit(CharacterError('Erro ao filtrar: $e'));
       }
     }
   }

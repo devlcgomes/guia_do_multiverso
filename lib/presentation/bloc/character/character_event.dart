@@ -8,7 +8,12 @@ abstract class CharacterEvent extends Equatable {
 }
 
 class LoadCharacters extends CharacterEvent {
-  const LoadCharacters();
+  final String? status;
+
+  const LoadCharacters({this.status});
+
+  @override
+  List<Object?> get props => [status];
 }
 
 class LoadMoreCharacters extends CharacterEvent {
@@ -21,6 +26,20 @@ class LoadMoreCharacters extends CharacterEvent {
 }
 
 class RefreshCharacters extends CharacterEvent {
-  const RefreshCharacters();
+  final String? status;
+
+  const RefreshCharacters({this.status});
+
+  @override
+  List<Object?> get props => [status];
+}
+
+class FilterByStatus extends CharacterEvent {
+  final String? status;
+
+  const FilterByStatus(this.status);
+
+  @override
+  List<Object?> get props => [status];
 }
 

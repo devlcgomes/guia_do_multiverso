@@ -20,28 +20,32 @@ class CharacterLoaded extends CharacterState {
   final List<CharacterEntity> characters;
   final String? nextUrl;
   final bool hasMore;
+  final String? currentStatus;
 
   const CharacterLoaded({
     required this.characters,
     this.nextUrl,
     required this.hasMore,
+    this.currentStatus,
   });
 
   @override
-  List<Object?> get props => [characters, nextUrl, hasMore];
+  List<Object?> get props => [characters, nextUrl, hasMore, currentStatus];
 }
 
 class CharacterLoadingMore extends CharacterState {
   final List<CharacterEntity> characters;
   final String? nextUrl;
+  final String? currentStatus;
 
   const CharacterLoadingMore({
     required this.characters,
     this.nextUrl,
+    this.currentStatus,
   });
 
   @override
-  List<Object?> get props => [characters, nextUrl];
+  List<Object?> get props => [characters, nextUrl, currentStatus];
 }
 
 class CharacterError extends CharacterState {
