@@ -72,30 +72,33 @@ class CharacterCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(
-                  imageUrl: character.image,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
+                child: Hero(
+                  tag: 'character_image_${character.id}',
+                  child: CachedNetworkImage(
+                    imageUrl: character.image,
                     width: 80,
                     height: 80,
-                    color: const Color(0xFF00FF88).withOpacity(0.2),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFF00FF88),
-                        strokeWidth: 2,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      width: 80,
+                      height: 80,
+                      color: const Color(0xFF00FF88).withOpacity(0.2),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF00FF88),
+                          strokeWidth: 2,
+                        ),
                       ),
                     ),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    width: 80,
-                    height: 80,
-                    color: const Color(0xFF00FF88).withOpacity(0.2),
-                    child: const Icon(
-                      Icons.person,
-                      size: 40,
-                      color: Color(0xFF00FF88),
+                    errorWidget: (context, url, error) => Container(
+                      width: 80,
+                      height: 80,
+                      color: const Color(0xFF00FF88).withOpacity(0.2),
+                      child: const Icon(
+                        Icons.person,
+                        size: 40,
+                        color: Color(0xFF00FF88),
+                      ),
                     ),
                   ),
                 ),
