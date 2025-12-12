@@ -34,6 +34,18 @@ class CharacterDetailPage extends StatelessWidget {
     }
   }
 
+  Color _getStatusBackgroundColor() {
+    switch (character.status.toLowerCase()) {
+      case 'alive':
+        return const Color(0xFF1B5E20); // Verde escuro
+      case 'dead':
+        return Colors.red.shade900; // Vermelho escuro
+      case 'unknown':
+      default:
+        return Colors.grey.shade800; // Cinza escuro
+    }
+  }
+
   String _getSpeciesText() {
     switch (character.species.toLowerCase()) {
       case 'human':
@@ -134,7 +146,7 @@ class CharacterDetailPage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1B5E20),
+        color: _getStatusBackgroundColor(),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
