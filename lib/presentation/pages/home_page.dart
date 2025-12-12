@@ -44,7 +44,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onScroll() {
-    // Scroll listener mantido para outras funcionalidades futuras
   }
 
   @override

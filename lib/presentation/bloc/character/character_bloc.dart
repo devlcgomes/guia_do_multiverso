@@ -44,7 +44,6 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     LoadMoreCharacters event,
     Emitter<CharacterState> emit,
   ) async {
-    // Previne múltiplas chamadas simultâneas
     if (state is CharacterLoadingMore) {
       return;
     }
@@ -147,7 +146,6 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     Emitter<CharacterState> emit,
   ) async {
     if (event.query.isEmpty) {
-      // Se a busca estiver vazia, recarrega todos os personagens
       emit(const CharacterLoading());
       try {
         final response = await getCharacters(GetCharactersParams());

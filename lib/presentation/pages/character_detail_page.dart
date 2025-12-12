@@ -37,12 +37,12 @@ class CharacterDetailPage extends StatelessWidget {
   Color _getStatusBackgroundColor() {
     switch (character.status.toLowerCase()) {
       case 'alive':
-        return const Color(0xFF1B5E20); // Verde escuro
+        return const Color(0xFF1B5E20);
       case 'dead':
-        return Colors.red.shade900; // Vermelho escuro
+        return Colors.red.shade900;
       case 'unknown':
       default:
-        return Colors.grey.shade800; // Cinza escuro
+        return Colors.grey.shade800;
     }
   }
 

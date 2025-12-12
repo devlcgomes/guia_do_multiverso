@@ -162,7 +162,7 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         content: const Text(
-          'Um guia completo de personagens do multiverso.\n\nVersão 1.0.0',
+          'Versão 1.0.0',
           style: TextStyle(color: Colors.white),
         ),
         actions: [
