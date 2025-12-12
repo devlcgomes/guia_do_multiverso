@@ -111,28 +111,37 @@ class CharacterDetailPage extends StatelessWidget {
         color: const Color(0xFFC8E6C9),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Hero(
-          tag: 'character_image_${character.id}',
-          child: CachedNetworkImage(
-            imageUrl: character.image,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            placeholder: (context, url) => Container(
-              color: const Color(0xFFC8E6C9),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF1A1A2E),
+      child: Hero(
+        tag: 'character_image_${character.id}',
+        child: Material(
+          color: Colors.transparent,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: CachedNetworkImage(
+              imageUrl: character.image,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              placeholder: (context, url) => Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFC8E6C9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF1A1A2E),
+                  ),
                 ),
               ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              color: const Color(0xFFC8E6C9),
-              child: const Icon(
-                Icons.person,
-                size: 100,
-                color: Color(0xFF1A1A2E),
+              errorWidget: (context, url, error) => Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFC8E6C9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.person,
+                  size: 100,
+                  color: Color(0xFF1A1A2E),
+                ),
               ),
             ),
           ),
