@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/character_entity.dart';
+import '../pages/character_detail_page.dart';
 
 class CharacterCard extends StatelessWidget {
   final CharacterEntity character;
@@ -34,22 +35,32 @@ class CharacterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A2E),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF00FF88).withOpacity(0.3),
-          width: 1.5,
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CharacterDetailPage(character: character),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A2E),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: const Color(0xFF00FF88).withOpacity(0.3),
+            width: 1.5,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
           children: [
             Container(
               width: 80,
@@ -118,6 +129,7 @@ class CharacterCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

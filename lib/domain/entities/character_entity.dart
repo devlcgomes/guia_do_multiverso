@@ -10,6 +10,8 @@ class CharacterEntity extends Equatable {
   final String image;
   final String url;
   final String location;
+  final String origin;
+  final List<String> episodes;
   final DateTime created;
 
   const CharacterEntity({
@@ -22,6 +24,8 @@ class CharacterEntity extends Equatable {
     required this.image,
     required this.url,
     required this.location,
+    required this.origin,
+    required this.episodes,
     required this.created,
   });
 
@@ -36,6 +40,8 @@ class CharacterEntity extends Equatable {
         image,
         url,
         location,
+        origin,
+        episodes,
         created,
       ];
 }
