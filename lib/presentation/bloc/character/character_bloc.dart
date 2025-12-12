@@ -43,6 +43,11 @@ class CharacterBloc extends Bloc<CharacterEvent, CharacterState> {
     LoadMoreCharacters event,
     Emitter<CharacterState> emit,
   ) async {
+    // Previne múltiplas chamadas simultâneas
+    if (state is CharacterLoadingMore) {
+      return;
+    }
+    
     if (state is CharacterLoaded) {
       final currentState = state as CharacterLoaded;
       emit(CharacterLoadingMore(

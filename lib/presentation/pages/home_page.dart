@@ -14,7 +14,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
-  bool _isLoadingMore = false;
 
   @override
   void initState() {
@@ -187,10 +186,7 @@ class _HomePageState extends State<HomePage> {
             final currentStatus = state is CharacterLoaded
                 ? state.currentStatus
                 : (state as CharacterLoadingMore).currentStatus;
-            
-            if (state is CharacterLoaded) {
-              _isLoadingMore = false;
-            }
+            final isLoadingMore = state is CharacterLoadingMore;
 
             return Expanded(
               child: RefreshIndicator(
@@ -212,17 +208,15 @@ class _HomePageState extends State<HomePage> {
                           }
 
                           final remainingItems = characters.length - index;
-                          if (remainingItems <= 5 && hasMore && !_isLoadingMore) {
-                            final state = context.read<CharacterBloc>().state;
-                            if (state is CharacterLoaded && state.nextUrl != null) {
-                              _isLoadingMore = true;
-                              
+                          if (remainingItems <= 5 && hasMore && !isLoadingMore) {
+                            final currentState = context.read<CharacterBloc>().state;
+                            if (currentState is CharacterLoaded && currentState.nextUrl != null) {
                               WidgetsBinding.instance.addPostFrameCallback((_) async {
                                 await Future.delayed(const Duration(milliseconds: 400));
                                 
                                 if (mounted) {
                                   context.read<CharacterBloc>().add(
-                                    LoadMoreCharacters(state.nextUrl!),
+                                    LoadMoreCharacters(currentState.nextUrl!),
                                   );
                                 }
                               });
