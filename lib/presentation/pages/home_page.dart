@@ -45,14 +45,22 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Personagens'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: BlocBuilder<CharacterBloc, CharacterState>(
+      backgroundColor: const Color(0xFF0F0F1E),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(context),
+            _buildSearchBar(context),
+            BlocBuilder<CharacterBloc, CharacterState>(
         builder: (context, state) {
           if (state is CharacterLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFF00FF88),
+                ),
+              ),
+            );
           }
 
           if (state is CharacterError) {
@@ -62,23 +70,32 @@ class _HomePageState extends State<HomePage> {
               lastStatus = previousState.currentStatus;
             }
 
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    state.message,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<CharacterBloc>().add(LoadCharacters(status: lastStatus));
-                    },
-                    child: const Text('Tentar novamente'),
-                  ),
-                ],
+            return Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state.message,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<CharacterBloc>().add(LoadCharacters(status: lastStatus));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00FF88),
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Text('Tentar novamente'),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -92,38 +109,150 @@ class _HomePageState extends State<HomePage> {
                 ? state.currentStatus
                 : (state as CharacterLoadingMore).currentStatus;
 
-            return RefreshIndicator(
-              onRefresh: () async {
-                final status = currentStatus;
-                context.read<CharacterBloc>().add(RefreshCharacters(status: status));
-              },
-              child: Column(
-                children: [
-                  _buildFilterChips(context, currentStatus),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: characters.length + (hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == characters.length) {
-                          return const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
+            return Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  final status = currentStatus;
+                  context.read<CharacterBloc>().add(RefreshCharacters(status: status));
+                },
+                child: Column(
+                  children: [
+                    _buildFilterChips(context, currentStatus),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.only(bottom: 80),
+                        itemCount: characters.length + (hasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == characters.length) {
+                            return const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF00FF88),
+                                ),
+                              ),
+                            );
+                          }
 
-                        final character = characters[index];
-                        return CharacterCard(character: character);
-                      },
+                          final character = characters[index];
+                          return CharacterCard(character: character);
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }
 
           return const SizedBox.shrink();
         },
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNavigation(context),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      child: const Text(
+        'Guia do Multiverso',
+        style: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF00FF88),
+          shadows: [
+            Shadow(
+              color: Color(0xFF00FF88),
+              blurRadius: 10,
+            ),
+            Shadow(
+              color: Color(0xFF00FF88),
+              blurRadius: 20,
+            ),
+          ],
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A2E),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Colors.grey[700]!,
+          width: 1,
+        ),
+      ),
+      child: TextField(
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: 'Buscar Personagem...',
+          hintStyle: TextStyle(color: Colors.grey[500]),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.grey[400],
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigation(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A2B34),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(0),
+          topRight: Radius.circular(0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.list,
+                  color: Color(0xFF4ECDC4),
+                  size: 28,
+                ),
+                onPressed: () {},
+              ),
+              const SizedBox(width: 60),
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.grey[400],
+                  size: 28,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -186,12 +315,22 @@ class _HomePageState extends State<HomePage> {
       label: Text(label),
       selected: isSelected,
       onSelected: (_) => onTap(),
-      selectedColor: Theme.of(context).colorScheme.primaryContainer,
-      checkmarkColor: Theme.of(context).colorScheme.onPrimaryContainer,
+      selectedColor: const Color(0xFF4ECDC4),
+      checkmarkColor: Colors.white,
+      backgroundColor: const Color(0xFF1A1A2E),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: isSelected
+              ? const Color(0xFF4ECDC4)
+              : Colors.grey[700]!,
+          width: 1,
+        ),
+      ),
       labelStyle: TextStyle(
         color: isSelected
-            ? Theme.of(context).colorScheme.onPrimaryContainer
-            : Theme.of(context).colorScheme.onSurface,
+            ? Colors.white
+            : Colors.grey[400],
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
       ),
     );

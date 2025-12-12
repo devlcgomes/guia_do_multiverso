@@ -15,7 +15,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Guia do Multiverso',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.dark(
+          primary: const Color(0xFF00FF88),
+          secondary: const Color(0xFF00FF88),
+          surface: const Color(0xFF1A1A2E),
+          background: const Color(0xFF0F0F1E),
+          onSurface: Colors.white,
+          onBackground: Colors.white,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0F0F1E),
         useMaterial3: true,
       ),
       home: BlocProvider(
