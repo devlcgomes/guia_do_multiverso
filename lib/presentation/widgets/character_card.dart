@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/character_entity.dart';
 import '../pages/character_detail_page.dart';
 
@@ -71,23 +72,32 @@ class CharacterCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  character.image,
+                child: CachedNetworkImage(
+                  imageUrl: character.image,
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 80,
-                      height: 80,
-                      color: const Color(0xFF00FF88).withOpacity(0.2),
-                      child: const Icon(
-                        Icons.person,
-                        size: 40,
+                  placeholder: (context, url) => Container(
+                    width: 80,
+                    height: 80,
+                    color: const Color(0xFF00FF88).withOpacity(0.2),
+                    child: const Center(
+                      child: CircularProgressIndicator(
                         color: Color(0xFF00FF88),
+                        strokeWidth: 2,
                       ),
-                    );
-                  },
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    width: 80,
+                    height: 80,
+                    color: const Color(0xFF00FF88).withOpacity(0.2),
+                    child: const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Color(0xFF00FF88),
+                    ),
+                  ),
                 ),
               ),
             ),

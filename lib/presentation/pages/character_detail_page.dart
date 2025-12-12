@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/character_entity.dart';
 
 class CharacterDetailPage extends StatelessWidget {
@@ -100,20 +101,26 @@ class CharacterDetailPage extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Image.network(
-          character.image,
+        child: CachedNetworkImage(
+          imageUrl: character.image,
           fit: BoxFit.cover,
           width: double.infinity,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: const Color(0xFFC8E6C9),
-              child: const Icon(
-                Icons.person,
-                size: 100,
+          placeholder: (context, url) => Container(
+            color: const Color(0xFFC8E6C9),
+            child: const Center(
+              child: CircularProgressIndicator(
                 color: Color(0xFF1A1A2E),
               ),
-            );
-          },
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: const Color(0xFFC8E6C9),
+            child: const Icon(
+              Icons.person,
+              size: 100,
+              color: Color(0xFF1A1A2E),
+            ),
+          ),
         ),
       ),
     );
